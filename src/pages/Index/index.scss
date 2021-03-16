@@ -1,0 +1,25 @@
+.nav {
+    padding: 10px 0;
+}
+
+.nav img {
+    width: 48px;
+}
+
+.nav h2 {
+    font-size: 13px;
+    font-weight: 400;
+}
+/* 通过调试工具我们看到，后续被生成的这个父元素的类名叫am-flexbox-item */
+.am-flexbox-item {
+    text-align: center;
+}
+
+h2 {
+    margin: 0;
+    margin-top: 7px;
+}
+.swiper {
+  position: relative;
+  height: 212px;
+}

@@ -55,6 +55,24 @@ export default class Home extends React.Component {
       ))
     )
   }
+   // 当Home组件的内容发生更新的时候调用
+
+    componentDidUpdate(prevProps) {
+
+        // 在这里就能判断路由是否进行了切换，路由的信息保存在props属性里面
+
+        // 如果当前的路由信息不等于上一次的，那么就代表发生了路由切换
+
+        if(prevProps.location.pathname !== this.props.location.pathname){
+
+            this.setState({
+
+                selectedTab: this.props.location.pathname
+
+            })
+
+        }
+    }
 
   render () {
 
