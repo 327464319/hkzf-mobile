@@ -1,6 +1,6 @@
 import React from 'react'
-import { Carousel ,Flex} from 'antd-mobile';
-import { getSwiper } from './../../api/home';
+import { Carousel, Flex, Grid, WingBlank} from 'antd-mobile';
+import { getSwiper,getGroups,getNews } from './../../api/home';
 import nav1 from '../../assets/images/nav-1.png'
 import nav2 from '../../assets/images/nav-2.png'
 import nav3 from '../../assets/images/nav-3.png'
@@ -32,17 +32,38 @@ export default class Index extends React.Component {
   state = {
     data: [],
     imgHeight: 212,
-    isSwipers:false
+    isSwipers: false,
+    // 租房小组状态
+    groups: [],
+    news:[]
   }
   async getSwipers () {
     // 请求数据
-    let { data: res } = await getSwiper('/home/swiper')
+    let { data: res } = await getSwiper()
     // 把获取到的值设置给state
     this.setState({
       data: res.body,
       isSwipers:true
     })
   
+  }
+  async getGroups () {
+    // 请求数据
+    let { data: res } = await getGroups()
+    // 把获取到的值设置给state
+    this.setState({
+      groups: res.body,
+    })
+
+  }
+  async getNews () {
+    // 请求数据
+    let { data: res } = await getNews()
+    // 把获取到的值设置给state
+    this.setState({
+      news: res.body,
+    })
+
   }
   renderSwipers () {
     return (this.state.data.map(val => (
@@ -68,14 +89,67 @@ export default class Index extends React.Component {
             </Flex.Item>
         )
     })
-}
+  }
+  renderGroups (item) {
+    return (
+      <Flex className="group-item" justify="around" >
+        <div className="desc">
+          <p className="title">{item.title}</p>
+          <span className="info">{item.desc}</span>
+        </div>
+        <img src={`http://localhost:8080${item.imgSrc}`} alt="" />
+      </Flex>
+    )
+  }
+  renderNews () {
+    return this.state.news.map(item => {
+      return (
+        <div className="news-item" key={item.id}>
+          <div className="imgwrap">
+            <img
+              className="img"
+              src={`http://localhost:8080${item.imgSrc}`}
+              alt=""
+            />
+          </div>
+          <Flex className="content" direction="column" justify="between">
+            <h3 className="title">{item.title}</h3>
+            <Flex className="info" justify="between">
+              <span>{item.from}</span>
+              <span>{item.date}</span>
+            </Flex>
+          </Flex>
+        </div>
+      )
+    })
+  }
   componentDidMount () {
     // simulate img loading
     this.getSwipers()
+    this.getGroups()
+    this.getNews()
   }
   render () {
     return (
       <div className='index'>
+        <Flex className='search-box'>
+          {/* 左侧白色区域 */}
+          <Flex className="search">
+            {/* 位置 */}
+            <div className="location" >
+              <span className="name">长沙</span>
+              <i className="iconfont icon-arrow" />
+            </div>
+
+            {/* 搜索表单 */}
+            <div className="form">
+              <i className="iconfont icon-seach" />
+              <span className="text">请输入小区或地址</span>
+            </div>
+          </Flex>
+          {/* 右侧地图图标 */}
+          <i className="iconfont icon-map" />
+        </Flex>
         <div className="swiper">
                {
           this.state.isSwipers?(<Carousel
@@ -89,8 +163,27 @@ export default class Index extends React.Component {
         </div>
    
         <Flex className="nav">
-  {this.renderNavs()}
-</Flex>
+        {this.renderNavs()}
+        </Flex>
+        {/* 租房小组 */}
+        <div className="group">
+          <h3 className="group-title">
+            租房小组 <span className="more">更多</span>
+          </h3>
+          <Grid data={this.state.groups}
+          
+            columnNum={2}
+          
+            square={false}
+           
+            hasLine={false}
+        
+            renderItem={item => this.renderGroups(item)} />
+        </div>
+        <div className="news">
+          <h3 className="group-title">最新资讯</h3>
+          <WingBlank size="md">{this.renderNews()}</WingBlank>
+        </div>
       </div>
     );
   }

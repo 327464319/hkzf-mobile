@@ -2,7 +2,7 @@ import React from 'react'
 import { Route } from 'react-router-dom'
 import News from './../News/index';
 import { TabBar } from 'antd-mobile';
-import './index.css'
+import './index.scss'
 import Index from './../Index/index';
 import Profile from './../Profile/index';
 import List from './../List/index';
@@ -31,6 +31,7 @@ export default class Home extends React.Component {
     super(props);
     this.state = {
       selectedTab: this.props.location.pathname,
+     
     };
   }
   renderTabarItem () {
@@ -81,7 +82,7 @@ export default class Home extends React.Component {
       <Route path='/home/list' component={List}></Route>
       <Route path='/home/news' component={News}></Route>
       <Route path='/home/profile' component={Profile}></Route>
-      <div style={this.state.fullScreen ? { position: 'fixed', height: '100%', width: '100%', top: 0 } : { height: 400 }}>
+     
         <TabBar
           unselectedTintColor="#949494"
           tintColor="#21b97a"
@@ -90,7 +91,7 @@ export default class Home extends React.Component {
         >
           {this.renderTabarItem()}
         </TabBar>
-      </div>
+    
 
     </div>
   }
