@@ -6,6 +6,7 @@ import nav2 from '../../assets/images/nav-2.png'
 import nav3 from '../../assets/images/nav-3.png'
 import nav4 from '../../assets/images/nav-4.png'
 import './index.scss'
+import { getCurrentCity } from './../../util/index';
 // 导航菜单的数据
 const navs = [{
     id: 0,
@@ -35,8 +36,10 @@ export default class Index extends React.Component {
     isSwipers: false,
     // 租房小组状态
     groups: [],
-    news:[]
+    news: [],
+    curCityName:'长沙'
   }
+  
   async getSwipers () {
     // 请求数据
     let { data: res } = await getSwiper()
@@ -123,21 +126,26 @@ export default class Index extends React.Component {
       )
     })
   }
-  componentDidMount () {
+ async componentDidMount () {
     // simulate img loading
     this.getSwipers()
     this.getGroups()
     this.getNews()
+   const curCity = await getCurrentCity()
+    this.setState({
+      curCityName: curCity.label
+    })
   }
   render () {
+    let { history } = this.props
     return (
       <div className='index'>
         <Flex className='search-box'>
           {/* 左侧白色区域 */}
           <Flex className="search">
             {/* 位置 */}
-            <div className="location" >
-              <span className="name">长沙</span>
+            <div className="location" onClick={() => history.push('/citylist')}>
+              <span className="name">{this.state.curCityName}</span>
               <i className="iconfont icon-arrow" />
             </div>
 
@@ -148,7 +156,7 @@ export default class Index extends React.Component {
             </div>
           </Flex>
           {/* 右侧地图图标 */}
-          <i className="iconfont icon-map" />
+          <i className="iconfont icon-map" onClick={() => history.push('/map')}/>
         </Flex>
         <div className="swiper">
                {
