@@ -4,6 +4,7 @@ import './index.scss'
 import { getCity, getCityHot } from './../../api/area';
 import { getCurrentCity } from './../../util/index';
 import { List, AutoSizer } from 'react-virtualized';
+
 // 索引（A、B等）的高度
 const TITLE_HEIGHT = 36
 // 每个城市名称的高度
@@ -38,6 +39,14 @@ export default class CityList extends React.Component{
     let { cityIndex, cityList } = this.state;
     return cityList[cityIndex[index]].length * NAME_HEIGHT + TITLE_HEIGHT;
   }
+   getScrollDistance (index) {
+     let cityArr = this.state.cityIndex.slice(0, index )
+   let distance=  cityArr.reduce((pre, item) => {
+     let distance=pre+this.state.cityList[item].length*NAME_HEIGHT + TITLE_HEIGHT
+       return distance
+     },0)
+   return distance
+}
 rowRenderer =({
     key, // Unique key within array of rows
     index, // Index of row within collection
@@ -84,7 +93,6 @@ rowRenderer =({
      cityList,
      cityIndex
    })
-  
   }
   formatCityData (list) {
     let cityList = {}
@@ -103,15 +111,17 @@ rowRenderer =({
       cityList,cityIndex
     }
   }
+  //右侧点击滚动城市列表
+  goCity=(index) => {
+          // 拿到List组件的实例
+          if (this.state.activeIndex !== index) { this.listComponent.current.scrollToPosition(this.getScrollDistance(index)+1) }
+        
+        
+        }
   renderCityIndex () {
     return this.state.cityIndex.map((item, index) => {
-    
-
       return (
-        <li className="city-index-item" key={item} onClick={() => {
-          // 拿到List组件的实例
-          this.listComponent.current.scrollToRow(index)
-        }}>
+        <li className="city-index-item" key={item} onClick={()=>this.goCity(index)}>
           {/*判断一下，如果高亮状态的索引等于当前索引，那么就设置高亮样式*/}
           <span className={this.state.activeIndex === index ? 'index-active' : ''}>{item === 'hot' ? '热' : item}</span>
         </li>
@@ -130,7 +140,7 @@ rowRenderer =({
   }
   async componentDidMount () {
     await this.getCityList()
-  this.listComponent.current.measureAllRows()
+  // this.listComponent.current.measureAllRows()
 
   }
   render () {
