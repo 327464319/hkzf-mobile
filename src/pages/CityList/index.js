@@ -109,6 +109,7 @@ rowRenderer =({
 
       return (
         <li className="city-index-item" key={item} onClick={() => {
+         
           // 拿到List组件的实例
           this.listComponent.current.scrollToRow(index)
         }}>
@@ -130,7 +131,7 @@ rowRenderer =({
   }
   async componentDidMount () {
     await this.getCityList()
-  this.listComponent.current.measureAllRows()
+    // this.listComponent.current.measureAllRows()
 
   }
   render () {
