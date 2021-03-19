@@ -1,3 +1,11 @@
 .map,#container{
   height: 100%;
+  padding-top: 45px;
+}
+.map{
+    .am-navbar {
+        // color: #333;
+        // background-color: #f6f5f6;
+        margin-top: -45px;
+    }
 }

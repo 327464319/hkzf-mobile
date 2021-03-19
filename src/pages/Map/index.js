@@ -1,5 +1,6 @@
 import react from 'react'
 import './map.scss'
+import  NavHeader from './../../components/NavHeader/index';
 export default class Map extends react.Component{
   renderMap () {
     var map = new window.BMapGL.Map("container");
@@ -9,9 +10,14 @@ export default class Map extends react.Component{
   componentDidMount () {
     this.renderMap()
   }
+  leftClick =() =>{
+    this.props.history.go(-1)
+  }
   render () {
     return (
+     
       <div className='map'>
+        <NavHeader leftClick={this.leftClick}>地图找房</NavHeader>
        <div id="container"></div>
       </div>
     )

@@ -4,6 +4,7 @@ import './index.scss'
 import { getCity, getCityHot } from './../../api/area';
 import { getCurrentCity } from './../../util/index';
 import { List, AutoSizer } from 'react-virtualized';
+import NavHeader from '../../components/NavHeader';
 
 // 索引（A、B等）的高度
 const TITLE_HEIGHT = 36
@@ -46,7 +47,16 @@ export default class CityList extends React.Component{
        return distance
      },0)
    return distance
-}
+  }
+  isScrollDistance (index) {
+    let { cityIndex, cityList } = this.state
+    let cityArr = cityIndex.slice(index)
+    let distance = cityArr.reduce((pre, item) => {
+      let distance = pre + cityList[item].length * NAME_HEIGHT + TITLE_HEIGHT
+      return distance
+    }, 0)
+    return distance<this.listComponent.current.props.height
+  }
 rowRenderer =({
     key, // Unique key within array of rows
     index, // Index of row within collection
@@ -112,7 +122,9 @@ rowRenderer =({
     }
   }
   //右侧点击滚动城市列表
-  goCity=(index) => {
+  goCity = (index) => {
+    
+    if (this.isScrollDistance(index)) return
           // 拿到List组件的实例
           if (this.state.activeIndex !== index) { this.listComponent.current.scrollToPosition(this.getScrollDistance(index)+1) }
         
@@ -121,15 +133,7 @@ rowRenderer =({
   renderCityIndex () {
     return this.state.cityIndex.map((item, index) => {
       return (
-<<<<<<< HEAD
-        <li className="city-index-item" key={item} onClick={() => {
-         
-          // 拿到List组件的实例
-          this.listComponent.current.scrollToRow(index)
-        }}>
-=======
         <li className="city-index-item" key={item} onClick={()=>this.goCity(index)}>
->>>>>>> 0c8be1f892e87d57e770100ef9136a9aeb38511d
           {/*判断一下，如果高亮状态的索引等于当前索引，那么就设置高亮样式*/}
           <span className={this.state.activeIndex === index ? 'index-active' : ''}>{item === 'hot' ? '热' : item}</span>
         </li>
@@ -148,23 +152,12 @@ rowRenderer =({
   }
   async componentDidMount () {
     await this.getCityList()
-<<<<<<< HEAD
-    // this.listComponent.current.measureAllRows()
-=======
   // this.listComponent.current.measureAllRows()
->>>>>>> 0c8be1f892e87d57e770100ef9136a9aeb38511d
 
   }
   render () {
     return <div className="citylist">
-      <NavBar
-        // 模式 默认值是 dark
-        mode="light"
-        // 左侧小图片
-        icon={<i className='iconfont icon-back' />}
-        // 左侧按钮的点击事件
-        onLeftClick={() => this.props.history.go(-1)}
-      >城市列表</NavBar>
+      <NavHeader>城市列表</NavHeader>
       <AutoSizer>
         {({ height, width }) => (
           <List
