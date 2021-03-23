@@ -20,3 +20,12 @@ export function getCityInfo (name) {
     }
   })
 }
+export function getAreaMap (id) {
+  return request({
+    url: `/area/map`,
+    method: 'get',
+    params: {
+      id
+    }
+  })
+}
