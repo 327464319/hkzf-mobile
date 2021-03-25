@@ -1,5 +1,5 @@
 import React from 'react'
-import { NavBar,Toast } from 'antd-mobile'
+import {Toast } from 'antd-mobile'
 import './index.scss'
 import { getCity, getCityHot } from './../../api/area';
 import { getCurrentCity } from './../../util/index';

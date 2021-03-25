@@ -4,7 +4,12 @@ import NavHeader from './../../components/NavHeader/index';
 import { getAreaMap } from '../../api/area';
 import { getCurrentCity } from './../../util/index';
 import styles from './index.module.css'
-import { Toast } from 'antd-mobile';
+import { Toast} from 'antd-mobile';
+import { getHouseById } from './../../api/house';
+import { Link } from 'react-router-dom'
+// 导入BASE_URL
+import { BASE_URL } from '../../util/url'
+import HouseItem from './../../components/HouseItem/index';
 // 覆盖物样式
 const labelStyle = {
   cursor: 'pointer',
@@ -16,7 +21,14 @@ const labelStyle = {
   textAlign: 'center'
 }
 export default class Map extends react.Component{
- async renderMap () {
+  state = {
+    // 小区下的房源列表
+    housesList: [],
+    // 表示是否展示房源列表
+    isShowList: false
+  }
+  async renderMap () {
+   
    var map = new window.BMapGL.Map("container");
    this.map=map
    const { label, value } = await getCurrentCity()
@@ -27,7 +39,16 @@ export default class Map extends react.Component{
      map.addControl(new window.BMapGL.ScaleControl())
    
    },label)
-      this.renderOverlays(value)
+   this.renderOverlays(value)
+   // 给地图绑定移动事件
+   map.addEventListener('movestart', () => {
+     // console.log('movestart')
+     if (this.state.isShowList) {
+       this.setState({
+         isShowList: false
+       })
+     }
+   })
   }
   async renderOverlays (id) {
     Toast.loading('加载中...',0)
@@ -91,6 +112,37 @@ export default class Map extends react.Component{
 
     // 设置样式
     label.setStyle(labelStyle)
+    label.addEventListener('click', e => {
+      // 获取并渲染房源数据
+      this.getHousesList(value)
+      // 获取当前被点击项
+      // const target = e.changedTouches[0]
+     const target=e.target
+      this.map.panBy(
+        window.innerWidth / 2 - target.clientX,
+        (window.innerHeight - 330) / 2 - target.clientY
+      )
+    })
+  }
+  // 获取小区房源数据
+  async getHousesList (id) {
+    try {
+      // 开启loading
+      Toast.loading('加载中...', 0, null, false)
+
+      const res = await getHouseById(id)
+      // 关闭 loading
+      Toast.hide()
+
+      this.setState({
+        housesList: res.data.body.list,
+        // 展示房源列表
+        isShowList: true
+      })
+    } catch (e) {
+      // 关闭 loading
+      Toast.hide()
+    }
   }
   getTypeAndZoom () {
     const zoom = this.map.getZoom()
@@ -110,12 +162,45 @@ export default class Map extends react.Component{
   leftClick =() =>{
     this.props.history.go(-1)
   }
+  // 封装渲染房屋列表的方法
+  renderHousesList () {
+    return this.state.housesList.map(item => (
+      <HouseItem
+        onClick={() => this.props.history.push(`/detail/${item.houseCode}`)}
+        key={item.houseCode}
+        src={'http://127.0.0.1:8080'+ item.houseImg}
+        title={item.title}
+        desc={item.desc}
+        tags={item.tags}
+        price={item.price}
+      />
+    ))
+
+  }
   render () {
     return (
      
       <div className='map'>
         <NavHeader leftClick={this.leftClick}>地图找房</NavHeader>
-       <div id="container"></div>
+        <div id="container"></div>
+        <div
+          className={[
+            styles.houseList,
+            this.state.isShowList ? styles.show : ''
+          ].join(' ')}
+        >
+          <div className={styles.titleWrap}>
+            <h1 className={styles.listTitle}>房屋列表</h1>
+            <Link className={styles.titleMore} to="/home/list">
+              更多房源
+            </Link>
+          </div>
+
+          <div className={styles.houseItems}>
+            {/* 房屋结构 */}
+            {this.renderHousesList()}
+          </div>
+        </div>
       </div>
     )
   }
